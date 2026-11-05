@@ -1,0 +1,20 @@
+[Unit]
+Description=Testpress Background Worker Service
+After=network.target
+
+[Service]
+Type=simple
+User=testpress
+Group=testpress
+WorkingDirectory=/home/anif/workspace/linux-process-management-systemd
+EnvironmentFile=/home/anif/workspace/linux-process-management-systemd/testpress-worker.env
+ExecStart=/usr/bin/python3 -u /home/anif/workspace/linux-process-management-systemd/app.py
+Restart=on-failure
+RestartSec=5s
+MemoryMax=50M
+CPUQuota=50%
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
