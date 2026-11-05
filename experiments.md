@@ -36,7 +36,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **Pausing and Resuming (`Ctrl+Z` / `bg`):** Pressing `Ctrl+Z` freezes the process in place without terminating it (`Stopped` state). Typing `bg` tells the process to wake back up and run in the background, giving us our terminal prompt back.
 * **Niceness:** Niceness controls how polite a program is about sharing CPU time. A higher nice value (+10) tells the Linux scheduler: *"I am very nice—feel free to give CPU time to other programs before me."*
 
-**Evidence:** `evidence/01_running_process.png`
+**Evidence:** [evidence/01_running_process.png](evidence/01_running_process.png)
 
 ---
 
@@ -60,7 +60,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **A Polite Request to Stop:** `SIGTERM` (signal 15) is Linux's standard way of telling a program: *"Please finish up your work and shut down."*
 * **Intercepting the Signal:** Because Python allows us to catch `SIGTERM` using `signal.signal()`, our script can finish writing data, close open database connections, print a shutdown log, and exit cleanly with code `0`.
 
-**Evidence:** `evidence/02_graceful_shutdown.png`
+**Evidence:** [evidence/02_graceful_shutdown.png](evidence/02_graceful_shutdown.png)
 
 ---
 
@@ -82,7 +82,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **No Negotiation (Forced Kill):** `SIGKILL` (signal 9) is an immediate termination order handled directly by the Linux kernel. The program never gets a chance to see the signal or execute any cleanup code.
 * **The Tradeoff:** While `kill -9` is guaranteed to stop a frozen or runaway program, it risks leaving files half-written or database state corrupted because the application is wiped from memory instantly.
 
-**Evidence:** `evidence/03_forced_termination.png`
+**Evidence:** [evidence/03_forced_termination.png](evidence/03_forced_termination.png)
 
 ---
 
@@ -111,7 +111,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **The Fix:** Running `chmod o+x /home/anif` gave `testpress` permission to walk through the folder path into the project workspace.
 * **Centralized Logging:** Systemd automatically forwards the worker's stdout/stderr to `journald`, so all heartbeats and errors are timestamped and preserved without needing manual log files.
 
-**Evidence:** `evidence/04_systemd_service.png`
+**Evidence:** [evidence/04_systemd_service.png](evidence/04_systemd_service.png)
 
 ---
 
@@ -135,7 +135,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **Distinguishing Accidents from Intent:** When we killed the worker with `kill -9`, the process died unexpectedly (`status=9/KILL`). Systemd knew this was an abnormal crash, not an intentional shutdown.
 * **Automated Recovery:** Thanks to `Restart=on-failure`, systemd waited 5 seconds and automatically spawned a brand new worker with a new PID, keeping our background service alive without any human intervention.
 
-**Evidence:** `evidence/05_automatic_restart.png`
+**Evidence:** [evidence/05_automatic_restart.png](evidence/05_automatic_restart.png)
 
 ---
 
@@ -163,7 +163,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **Detecting Crashes:** When our Python script raised an unhandled error and ran `sys.exit(1)`, systemd saw exit code `1` and treated it as a failure (`status=1/FAILURE`), triggering a restart.
 * **Diagnosing via `journalctl`:** Because systemd captures and timestamps all output, running `journalctl -u testpress-worker` let us see the exact error message and the recovery timeline in plain English.
 
-**Evidence:** `evidence/06_crash_investigation.png`
+**Evidence:** [evidence/06_crash_investigation.png](evidence/06_crash_investigation.png)
 
 ---
 
@@ -185,7 +185,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **The Missing Program:** When systemd tried to launch our service, it looked for `/usr/bin/python3_invalid` on disk and discovered it does not exist.
 * **Decoding `203/EXEC`:** Systemd has dedicated error codes for setup failures. Code `203/EXEC` literally means: *"I could not find or run the executable file specified in `ExecStart`."*
 
-**Evidence:** `evidence/07_invalid_configuration.png`
+**Evidence:** [evidence/07_invalid_configuration.png](evidence/07_invalid_configuration.png)
 
 ---
 
@@ -212,7 +212,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **Protecting the System:** Systemd acts like an electrical circuit breaker. Because the service crashed 5 times in under 20 seconds, systemd stepped in and declared: *"This service is stuck in a crash loop, so I am stopping it before it degrades the whole server."*
 * **Resetting the Breaker:** Once the underlying issue is fixed, an administrator must manually reset the circuit breaker using `systemctl reset-failed`.
 
-**Evidence:** `evidence/08_repeated_crashes.png`
+**Evidence:** [evidence/08_repeated_crashes.png](evidence/08_repeated_crashes.png)
 
 ---
 
@@ -248,7 +248,7 @@ This document records hands-on experiments, observations, and technical explanat
 * **The OOM Killer steps in:** To protect the rest of the operating system from freezing or running out of memory, the Linux kernel activated its **Out-Of-Memory (OOM) Killer**. It immediately killed our process with `SIGKILL` (signal 9).
 * **Automatic Recovery:** Systemd detected that the process died due to an OOM kill (`result='oom-kill'`). Under `Restart=on-failure`, systemd waited 5 seconds and automatically started a fresh worker with a clean slate of memory.
 
-**Evidence:** `evidence/09_resource_limits.png`
+**Evidence:** [evidence/09_resource_limits.png](evidence/09_resource_limits.png)
 
 
 ---
@@ -273,4 +273,4 @@ This document records hands-on experiments, observations, and technical explanat
 * **How Boot Targets Work:** When Linux boots, systemd initializes the system in phases called "targets". Once foundational services are ready, systemd reaches `multi-user.target` (standard multi-user system state).
 * **The Enabled Symlink:** Running `sudo systemctl enable testpress-worker` created a symbolic link in `/etc/systemd/system/multi-user.target.wants/`. During boot, systemd scans this folder and launches all linked services automatically.
 
-**Evidence:** `evidence/10_reboot_persistence.png`
+**Evidence:** [evidence/10_reboot_persistence.png](evidence/10_reboot_persistence.png)
