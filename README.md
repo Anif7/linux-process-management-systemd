@@ -50,6 +50,8 @@ At Testpress, background services such as Celery workers, cron jobs, and Django 
     └── 10_reboot_persistence.png
 ```
 
+> **Note:** For the complete log of actions, expectations, observations, and deep explanations across all 10 experiments, see [experiments.md](experiments.md).
+
 ---
 
 ## Key Design Decisions
@@ -164,6 +166,8 @@ Configuration values are loaded through `testpress-worker.env`:
 ---
 
 ## Step-by-Step Reproduction Guide
+
+> For the comprehensive experiment write-up with technical explanations and mapped evidence screenshots, refer to [experiments.md](experiments.md).
 
 To independently reproduce the 10 experiments and verify behavior:
 
